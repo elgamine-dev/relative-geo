@@ -1,0 +1,23 @@
+{
+    "name": "elgamine/relativegeo",
+    "authors": [
+        {
+            "name": "Amine El Ghayate",
+            "email": "mhwebdev@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elgamine\\RelativeGeo\\" : "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\":"tests/"
+        }
+    }
+}
