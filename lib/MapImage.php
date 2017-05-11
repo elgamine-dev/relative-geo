@@ -38,7 +38,7 @@ class MapImage {
         $lat = $point->lat;
         $long = $point->long;
         if (!$this->inBound($lat, $long)) {
-            throw new \Exception('Point is not inbound');
+            throw new OutboundException();
         }
         $pointRelative['x'] = $this->calcPercentage($lat, $this->coordinates[0][0], $this->coordinates[1][0]);
         $pointRelative['y'] = $this->calcPercentage($long, $this->coordinates[0][1], $this->coordinates[1][1]);
@@ -59,10 +59,10 @@ class MapImage {
         $max_y = max(floatval($coordinates[0][1]), floatval($coordinates[1][1]));
         
         if (floatval($lat) < $min_x || floatval($lat) > $max_x) {
-            throw new \Exception('Latitude is not inbound, point : '. join(',', [$lat, $long]). '; map : '. $this);
+            throw new OutboundException('Latitude is not inbound, point : '. join(',', [$lat, $long]). '; map : '. $this);
         }
         if (floatval($long) < $min_y|| floatval($long) > $max_y) {
-            throw new \Exception('Longitude is not inbound');
+            throw new OutboundException('Longitude is not inbound, point : '. join(',', [$lat, $long]). '; map : '. $this);
         }
         return true;
     }
@@ -94,7 +94,7 @@ class MapImage {
         return $this->points;
     }
 
-    public function __toString(){
+    public function __toString() {
         return json_encode($this->params);
     }
 
