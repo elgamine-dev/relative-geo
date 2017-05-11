@@ -8,9 +8,12 @@ class MapImage {
     public $width;
     public $height;
     public $relative = true;
+    protected $points = [];
+    private $params;
 
 
     public function __construct ($params = []) {
+        $this->params = $params;
         if (!isset($params['padding'])) {
             $params['padding'] = [0,0,0,0];
         }
@@ -18,7 +21,7 @@ class MapImage {
         if (!isset($params['coordinates']) 
             || empty($params['coordinates']) 
             || !is_array($params['coordinates'])) {
-            throw new \Exception('Map coordinates are missing');
+            throw new MissingParamsException('Map coordinates are missing');
         }
         
         $this->padding = $params['padding'];
@@ -31,19 +34,21 @@ class MapImage {
         }
     }
 
-    public function addPoint ($lat, $long) {
+    public function getPoint (Point $point) {
+        $lat = $point->lat;
+        $long = $point->long;
         if (!$this->inBound($lat, $long)) {
             throw new \Exception('Point is not inbound');
         }
-        $point['x'] = $this->calcPercentage($lat, $this->coordinates[0][0], $this->coordinates[1][0]);
-        $point['y'] = $this->calcPercentage($long, $this->coordinates[0][1], $this->coordinates[1][1]);
+        $pointRelative['x'] = $this->calcPercentage($lat, $this->coordinates[0][0], $this->coordinates[1][0]);
+        $pointRelative['y'] = $this->calcPercentage($long, $this->coordinates[0][1], $this->coordinates[1][1]);
 
         if ($this->height) {
-            $point['x'] = $point['x'] * ($this->width - ($this->padding[1] + $this->padding[3])) + $this->padding[1];
-            $point['y'] = $point['y'] * ($this->width - ($this->padding[0] + $this->padding[2])) + $this->padding[0];
+            $pointRelative['x'] = $pointRelative['x'] * ($this->width - ($this->padding[1] + $this->padding[3])) + $this->padding[1];
+            $pointRelative['y'] = $pointRelative['y'] * ($this->width - ($this->padding[0] + $this->padding[2])) + $this->padding[0];
         }
 
-        return $point;
+        return $pointRelative;
     }
 
     public function inBound ($lat, $long) {
@@ -53,16 +58,16 @@ class MapImage {
         $min_y = min(floatval($coordinates[0][1]), floatval($coordinates[1][1]));
         $max_y = max(floatval($coordinates[0][1]), floatval($coordinates[1][1]));
         
-        if(floatval($lat) < $min_x || floatval($lat) > $max_x) {
-            throw new \Exception('Latitude is not inbound');
+        if (floatval($lat) < $min_x || floatval($lat) > $max_x) {
+            throw new \Exception('Latitude is not inbound, point : '. join(',', [$lat, $long]). '; map : '. $this);
         }
-        if(floatval($long) < $min_y|| floatval($long) > $max_y) {
+        if (floatval($long) < $min_y|| floatval($long) > $max_y) {
             throw new \Exception('Longitude is not inbound');
         }
         return true;
     }
 
-    public function calcPercentage($point, $lowerBound, $higherBound) {
+    public function calcPercentage ($point, $lowerBound, $higherBound) {
         $reverse = false;
         $point = floatval($point);
         $min = min(floatval($lowerBound), floatval($higherBound));
@@ -77,6 +82,20 @@ class MapImage {
         }
         return $percentage;
 
+    }
+
+    public function addAddress (GeoService $geo, $address) {
+        $coord = $address->resolve($geo);
+        $coord->setPosition($this->getPoint($coord));
+        $this->points[] = $coord;
+    }
+
+    public function listPoints () {
+        return $this->points;
+    }
+
+    public function __toString(){
+        return json_encode($this->params);
     }
 
 }

@@ -1,0 +1,27 @@
+{
+  "name": "relativegeo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elgamine-dev/relative-geo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elgamine-dev/relative-geo/issues"
+  },
+  "homepage": "https://github.com/elgamine-dev/relative-geo#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-phpunit": "^0.22.2"
+  }
+}
